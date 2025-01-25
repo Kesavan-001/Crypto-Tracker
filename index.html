@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crypto Price Tracker</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1>Crypto Price Tracker</h1>
+    <button id="theme-toggle">Dark Mode</button>
+  </header>
+
+  <main>
+    <input type="text" id="search" placeholder="Search cryptocurrency..." />
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Name</th>
+          <th>Symbol</th>
+          <th>Price (USD)</th>
+          <th>Market Cap</th>
+          <th>24hrs change</th>
+        </tr>
+      </thead>
+      <tbody id="crypto-table">
+        <!-- Dynamic Content -->
+      </tbody>
+    </table>
+    <!-- Button to open graph page -->
+    <button id="view-graph" onclick="window.location.href='graph.html'">View Price Comparison Graph</button>
+  </main>
+
+
+  <script src="script.js"></script>
+  <script src="common.js"></script>
+</body>
+</html>

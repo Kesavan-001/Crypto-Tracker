@@ -1,0 +1,122 @@
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f4f8;
+    color: #333;
+  }
+  
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background-color: #825CFF;
+    color: white;
+  }
+  
+  header h1 {
+    margin: 0;
+  }
+  
+  button#theme-toggle {
+    font-family: 'Poppins', sans-serif;
+    padding: 0.5rem 1rem;
+    background-color: #ffffff;
+    border: none;
+    color: #825CFF;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  main {
+    padding: 1rem;
+  }
+  
+  input#search {
+    width: 300px;
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+    border: 1px solid #825CFF;
+    border-radius: 5px;
+    outline: none;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1rem;
+  }
+  
+  table th, table td {
+    text-align: left;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+  }
+  
+  table th {
+    background-color: #825CFF;
+    color: white;
+  }
+  
+  table .crypto-image {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  
+  table img {
+    width: 60px;
+    height: 60px;
+  }
+  
+  footer {
+    text-align: center;
+    padding: 1rem;
+    background-color: #825CFF;
+    color: white;
+  }
+  
+  body.dark-mode {
+    background-color: #121212;
+    color: white;
+  }
+  
+  body.dark-mode header {
+    background-color: #333;
+  }
+  
+  body.dark-mode button#theme-toggle {
+    background-color: #6200ea;
+    color: white;
+  }
+  
+  body.dark-mode table th {
+    background-color: #333;
+  }
+  
+  #comparison-graph {
+    margin-top: 2rem;
+    width: 100%; /* Set the width to 100% of the container */
+    max-width: 100%; /* Ensure it doesn't overflow its container */
+}
+
+  #search {
+    width: 300px;             
+    padding: 0.5rem;         
+    margin: 0 auto;           
+    display: block;           
+    margin-bottom: 1rem;      
+  }
+  #view-graph{
+    width: 300px;             
+    padding: 0.5rem;         
+    margin: 0 auto;           
+    display: block;           
+    margin-bottom: 1rem;
+    border-radius: 50px;
+    background-color: rgb(118, 118, 235);
+    border: none;
+  }
+  
