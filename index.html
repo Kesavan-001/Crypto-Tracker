@@ -1,41 +1,310 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Crypto Price Tracker</title>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap">
-  <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto Price Tracker & Comparison</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
+            color: #2d3436;
+            transition: all 0.5s ease;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 2rem;
+            background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+            color: white;
+            box-shadow: 0 8px 25px rgba(108, 92, 231, 0.2);
+            position: relative;
+            overflow: hidden;
+            animation: bounceIn 0.8s ease-out;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: glow 8s infinite;
+        }
+
+        .controls { display: flex; gap: 1rem; }
+
+        button {
+            padding: 0.5rem 1.5rem;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        button:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
+        }
+
+        main {
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .search-container {
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            animation: fadeInScale 0.8s ease-out;
+        }
+
+        #search {
+            padding: 0.75rem 1.5rem;
+            width: 300px;
+            border: 2px solid #6c5ce7;
+            border-radius: 25px;
+            outline: none;
+            transition: all 0.3s ease;
+            background: rgba(255,255,255,0.9);
+        }
+
+        #search:focus {
+            box-shadow: 0 0 15px rgba(108, 92, 231, 0.4);
+            border-color: #a29bfe;
+            transform: scale(1.02);
+        }
+
+        .table-container {
+            background: linear-gradient(145deg, #ffffff, #f5f6fa);
+            border-radius: 20px;
+            padding: 1rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            margin-bottom: 2rem;
+            overflow-x: auto;
+            animation: slideInBounce 0.9s ease-out;
+            border: 1px solid rgba(108, 92, 231, 0.1);
+        }
+
+        table { width: 100%; border-collapse: collapse; }
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(108, 92, 231, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        th {
+            background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+            color: white;
+            position: sticky;
+            top: 0;
+        }
+
+        tr {
+            opacity: 0;
+            animation: fadeInUp 0.5s ease forwards;
+        }
+
+        tr:nth-child(1) { animation-delay: 0.1s; }
+        tr:nth-child(2) { animation-delay: 0.2s; }
+        tr:nth-child(3) { animation-delay: 0.3s; }
+        tr:nth-child(n+4) { animation-delay: 0.4s; }
+
+        tr:hover {
+            background: rgba(108, 92, 231, 0.05);
+            transform: scale(1.01) translateX(5px);
+        }
+
+        .crypto-image {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            cursor: pointer;
+        }
+
+        .crypto-image img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            transition: transform 0.4s ease;
+        }
+
+        .crypto-image:hover img {
+            transform: scale(1.2) rotate(15deg);
+        }
+
+        body.dark-mode {
+            background: linear-gradient(135deg, #2d3436, #1e272e);
+            color: #dfe6e9;
+        }
+
+        body.dark-mode header {
+            background: linear-gradient(135deg, #2d3436, #636e72);
+        }
+
+        body.dark-mode .table-container {
+            background: linear-gradient(145deg, #2d3436, #353b48);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border: 1px solid rgba(108, 92, 231, 0.2);
+        }
+
+        body.dark-mode th {
+            background: linear-gradient(135deg, #2d3436, #636e72);
+        }
+
+        body.dark-mode button {
+            background: rgba(108, 92, 231, 0.8);
+        }
+
+        @keyframes bounceIn {
+            0% { opacity: 0; transform: scale(0.8); }
+            60% { opacity: 1; transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes fadeInScale {
+            0% { opacity: 0; transform: scale(0.9); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes slideInBounce {
+            0% { opacity: 0; transform: translateY(50px); }
+            60% { opacity: 1; transform: translateY(-10px); }
+            100% { transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes glow {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            header { flex-direction: column; gap: 1rem; }
+            .controls { flex-direction: column; width: 100%; }
+            button { width: 100%; }
+            .search-container { flex-direction: column; }
+            #search { width: 100%; }
+        }
+    </style>
 </head>
 <body>
-  <header>
-    <h1>Crypto Price Tracker</h1>
-    <button id="theme-toggle">Dark Mode</button>
-  </header>
+    <header>
+        <h1>Crypto Price Tracker</h1>
+        <div class="controls">
+            <button id="theme-toggle">Dark Mode</button>
+            <button id="refresh-data">Refresh Data</button>
+        </div>
+    </header>
 
-  <main>
-    <input type="text" id="search" placeholder="Search cryptocurrency..." />
-    <table>
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Name</th>
-          <th>Symbol</th>
-          <th>Price (USD)</th>
-          <th>Market Cap</th>
-          <th>24hrs change</th>
-        </tr>
-      </thead>
-      <tbody id="crypto-table">
-        <!-- Dynamic Content -->
-      </tbody>
-    </table>
-    <!-- Button to open graph page -->
-    <button id="view-graph" onclick="window.location.href='graph.html'">View Price Comparison Graph</button>
-  </main>
+    <main>
+        <div class="search-container">
+            <input type="text" id="search" placeholder="Search cryptocurrencies...">
+        </div>
 
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Symbol</th>
+                        <th>Price (USD)</th>
+                        <th>Market Cap</th>
+                        <th>24h Change</th>
+                    </tr>
+                </thead>
+                <tbody id="crypto-table"></tbody>
+            </table>
+        </div>
+    </main>
 
-  <script src="script.js"></script>
-  <script src="common.js"></script>
+    <script>
+        const API_URL = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&per_page=150&price_change_percentage=24h&sparkline=true";
+        let cryptoData = [];
+
+        async function fetchCryptoData() {
+            try {
+                const response = await fetch(API_URL);
+                if (!response.ok) throw new Error('API request failed');
+                cryptoData = await response.json();
+                displayCryptoData(cryptoData);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+
+        function displayCryptoData(data) {
+            const cryptoTable = document.getElementById("crypto-table");
+            cryptoTable.innerHTML = "";
+            data.forEach((coin, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td class="crypto-image" data-coin-id="${coin.id}">
+                        <img src="${coin.image}" alt="${coin.name}">
+                        ${coin.name}
+                    </td>
+                    <td>${coin.symbol.toUpperCase()}</td>
+                    <td>$${coin.current_price.toLocaleString()}</td>
+                    <td>$${coin.market_cap.toLocaleString()}</td>
+                    <td style="color: ${coin.price_change_percentage_24h < 0 ? '#ff7675' : '#00b894'}">
+                        ${coin.price_change_percentage_24h.toFixed(2)}%
+                    </td>
+                `;
+                cryptoTable.appendChild(row);
+                row.querySelector('.crypto-image').addEventListener('click', () => {
+                    window.open(`coin-details.html?coin=${coin.id}`, '_blank');
+                });
+            });
+        }
+
+        document.getElementById("search").addEventListener("input", (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const filteredData = cryptoData.filter(coin => 
+                coin.name.toLowerCase().includes(searchTerm) || 
+                coin.symbol.toLowerCase().includes(searchTerm)
+            );
+            displayCryptoData(filteredData);
+        });
+
+        const themeToggle = document.getElementById("theme-toggle");
+        if (localStorage.getItem('dark-mode') === 'enabled') {
+            document.body.classList.add('dark-mode');
+            themeToggle.textContent = "Light Mode";
+        }
+        themeToggle.addEventListener("click", () => {
+            document.body.classList.toggle("dark-mode");
+            themeToggle.textContent = document.body.classList.contains("dark-mode") 
+                ? "Light Mode" 
+                : "Dark Mode";
+            localStorage.setItem('dark-mode', document.body.classList.contains('dark-mode') ? 'enabled' : 'disabled');
+        });
+
+        document.getElementById("refresh-data").addEventListener("click", fetchCryptoData);
+
+        fetchCryptoData();
+        setInterval(fetchCryptoData, 300000);
+    </script>
 </body>
 </html>
