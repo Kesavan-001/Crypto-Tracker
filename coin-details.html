@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cryptocurrency Details</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
+            color: #2d3436;
+            padding: 2rem;
+            transition: all 0.5s ease;
+        }
+
+        header {
+            background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+            color: white;
+            padding: 1.5rem 2rem;
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(108, 92, 231, 0.2);
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+            animation: bounceIn 0.8s ease-out;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: glow 8s infinite;
+        }
+
+        .back-btn {
+            position: absolute;
+            left: 1.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,0.2);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .back-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-50%) scale(1.2) rotate(10deg);
+        }
+
+        .back-btn svg { width: 20px; height: 20px; fill: white; }
+
+        .coin-info {
+            background: linear-gradient(145deg, #ffffff, #f5f6fa);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            margin-bottom: 2rem;
+            animation: slideInBounce 0.8s ease-out;
+            border: 1px solid rgba(108, 92, 231, 0.1);
+        }
+
+        .coin-info img {
+            width: 80px; /* Larger logo */
+            height: 80px;
+            border-radius: 50%;
+            vertical-align: middle;
+            margin-right: 1.5rem;
+            transition: transform 0.5s ease;
+            box-shadow: 0 4px 15px rgba(108, 92, 231, 0.2);
+        }
+
+        .coin-info img:hover {
+            transform: rotate(360deg) scale(1.15);
+        }
+
+        .graph-container {
+            background: linear-gradient(145deg, #ffffff, #f5f6fa);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            animation: fadeInUp 1s ease-out;
+            border: 1px solid rgba(108, 92, 231, 0.1);
+        }
+
+        canvas { width: 800px !important; height: 400px !important; border-radius: 15px; }
+
+        body.dark-mode {
+            background: linear-gradient(135deg, #2d3436, #1e272e);
+            color: #dfe6e9;
+        }
+
+        body.dark-mode header {
+            background: linear-gradient(135deg, #2d3436, #636e72);
+        }
+
+        body.dark-mode .coin-info,
+        body.dark-mode .graph-container {
+            background: linear-gradient(145deg, #2d3436, #353b48);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border: 1px solid rgba(108, 92, 231, 0.2);
+        }
+
+        @keyframes bounceIn {
+            0% { opacity: 0; transform: scale(0.8); }
+            60% { opacity: 1; transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes slideInBounce {
+            0% { opacity: 0; transform: translateY(50px); }
+            60% { opacity: 1; transform: translateY(-10px); }
+            100% { transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            0% { opacity: 0; transform: translateY(30px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes glow {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        h2 { margin-bottom: 1rem; transition: color 0.3s ease; }
+
+        p {
+            margin: 0.5rem 0;
+            line-height: 1.6;
+            opacity: 0;
+            animation: fadeIn 0.6s ease forwards;
+            animation-delay: 0.4s;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <button class="back-btn" id="back-btn">
+            <svg viewBox="0 0 24 24">
+                <path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6z"/>
+            </svg>
+        </button>
+        <h1>Cryptocurrency Details</h1>
+    </header>
+
+    <main>
+        <div class="coin-info" id="coin-info"></div>
+        <div class="graph-container" id="coin-graph"></div>
+    </main>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const coinId = urlParams.get('coin');
+
+        document.getElementById('back-btn').addEventListener('click', () => {
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                window.location.href = 'index.html'; // Adjust to your main page
+            }
+        });
+
+        async function fetchCoinDetails() {
+            try {
+                const response = await fetch(`https://api.coingecko.com/api/v3/coins/${coinId}`);
+                if (!response.ok) throw new Error('Failed to fetch coin details');
+                const data = await response.json();
+                displayCoinDetails(data);
+            } catch (error) {
+                console.error('Error fetching coin details:', error);
+            }
+        }
+
+        async function fetchCoinHistory() {
+            try {
+                const response = await fetch(`https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=usd&days=7&interval=daily`);
+                if (!response.ok) throw new Error('Failed to fetch coin history');
+                const data = await response.json();
+                renderCoinGraph(data.prices);
+            } catch (error) {
+                console.error('Error fetching coin history:', error);
+            }
+        }
+
+        function displayCoinDetails(data) {
+            const coinInfo = document.getElementById("coin-info");
+            coinInfo.innerHTML = `
+                <h2>
+                    <img src="${data.image.large}" alt="${data.name}">
+                    ${data.name} (${data.symbol.toUpperCase()})
+                </h2>
+                <p>Current Price: $${data.market_data.current_price.usd.toLocaleString()}</p>
+                <p>Market Cap: $${data.market_data.market_cap.usd.toLocaleString()}</p>
+                <p>24h Change: <span style="color: ${data.market_data.price_change_percentage_24h < 0 ? '#ff7675' : '#00b894'}">
+                    ${data.market_data.price_change_percentage_24h.toFixed(2)}%</span></p>
+                <p>Total Volume: $${data.market_data.total_volume.usd.toLocaleString()}</p>
+                <p>Description: ${data.description.en.split('.')[0] || 'No description available.'}</p>
+            `;
+        }
+
+        function renderCoinGraph(priceData) {
+            const graphContainer = document.getElementById("coin-graph");
+            graphContainer.innerHTML = `<h3>${coinId.charAt(0).toUpperCase() + coinId.slice(1)} Price (Last 7 Days)</h3>`;
+            const ctx = document.createElement('canvas');
+            graphContainer.appendChild(ctx);
+
+            const labels = priceData.map((_, index) => `Day ${index + 1}`);
+            const prices = priceData.map(price => price[1]);
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Price (USD)',
+                        data: prices,
+                        borderColor: '#6c5ce7',
+                        backgroundColor: 'rgba(108, 92, 231, 0.2)',
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 5,
+                        pointHoverRadius: 8,
+                        pointBackgroundColor: '#fff',
+                        pointBorderColor: '#6c5ce7',
+                        pointBorderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: false,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { title: { display: true, text: 'Days', color: '#6c5ce7' }, grid: { color: 'rgba(108, 92, 231, 0.1)' } },
+                        y: { title: { display: true, text: 'Price (USD)', color: '#6c5ce7' }, beginAtZero: false, grid: { color: 'rgba(108, 92, 231, 0.1)' } }
+                    },
+                    plugins: {
+                        legend: { position: 'top' },
+                        tooltip: {
+                            backgroundColor: 'rgba(108, 92, 231, 0.9)',
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            callbacks: { label: (context) => `$${context.raw.toLocaleString()}` }
+                        }
+                    },
+                    animation: { duration: 1500, easing: 'easeOutBounce' } // Enhanced chart animation
+                }
+            });
+        }
+
+        if (localStorage.getItem('dark-mode') === 'enabled') {
+            document.body.classList.add('dark-mode');
+        }
+
+        if (coinId) {
+            fetchCoinDetails();
+            fetchCoinHistory();
+        } else {
+            document.getElementById("coin-info").innerHTML = "<p>No coin specified.</p>";
+        }
+    </script>
+</body>
+</html>
